@@ -104,6 +104,40 @@ def tobs():
 
     return jsonify(tobs_list)
 
+@app.route("/api/v1.0/<start>")
+def start_only(start): #function provided in starter jupyter notebook
+
+    session = Session(engine)
+
+    results = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
+        filter(Measurement.date >= start).all()
+
+    session.close()
+
+    temp_list = list(np.ravel(results))
+
+    for temp in temp_list:
+        temp_dict = {"Min":temp_list[0],"Avg":temp_list[1],"Max":temp_list[2]}
+
+    return jsonify(temp_dict)
+
+@app.route("/api/v1.0/<start>/<end>")
+def start_to_end(start,end): #function provided in starter jupyter notebook
+
+    session = Session(engine)
+
+    results = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
+        filter(Measurement.date >= start).filter(Measurement.date <= end).all()
+
+    session.close()
+
+
+    temp_list = list(np.ravel(results))
+
+    for temp in temp_list:
+        temp_dict = {"Min":temp_list[0],"Avg":temp_list[1],"Max":temp_list[2]}
+
+    return jsonify(temp_dict)
 
 # /api/v1.0/<start> and /api/v1.0/<start>/<end>
 # Return a JSON list of the minimum temperature, the average temperature, and the max temperature for a given start or start-end range.
